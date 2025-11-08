@@ -4,16 +4,22 @@ using System.Net.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddHttpClient("webapiagent1", httpClient => {
+    httpClient.BaseAddress = new Uri("https+http://webapiagent1");
+});
 
-var chatClient = new AGUIChatClient(new HttpClient(), "https://localhost:7116/ag-ui");
-
-builder.Services.AddChatClient(chatClient);
+builder.Services.AddChatClient(sp => new AGUIChatClient(
+    sp.GetRequiredService<IHttpClientFactory>().CreateClient("webapiagent1"), "ag-ui"));
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

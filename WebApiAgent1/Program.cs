@@ -11,24 +11,19 @@ using OpenAI.Chat;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// You will need to set the token to your own value
-// You can do this using Visual Studio's "Manage User Secrets" UI, or on the command line:
-//   cd this-project-directory
-//   dotnet user-secrets set GitHubModels:Token YOUR-GITHUB-TOKEN
-var chatClient = new ChatClient(
-        "gpt-4o-mini",
-        new ApiKeyCredential(builder.Configuration["GitHubModels:Token"] ?? throw new InvalidOperationException("Missing configuration: GitHubModels:Token.")),
-        new OpenAIClientOptions { Endpoint = new Uri("https://models.inference.ai.azure.com") })
-    .AsIChatClient();
+builder.AddServiceDefaults();
 
-builder.Services.AddChatClient(chatClient);
+builder.AddAzureOpenAIClient("openai")
+    .AddChatClient("gpt-4o-mini")
+    .UseFunctionInvocation()
+    .UseOpenTelemetry(configure: c => c.EnableSensitiveData = builder.Environment.IsDevelopment());
 
-builder.AddAIAgent("writer", "You write short stories (300 words or less) about the specified topic.");
+builder.AddAIAgent("writer", "You write short stories (100 words or less) about the specified topic.");
 
 builder.AddAIAgent("editor", (sp, key) => new ChatClientAgent(
-    chatClient,
+    sp.GetRequiredService<IChatClient>(),
     name: key,
-    instructions: "You edit short stories to improve grammar and style, ensuring the stories are less than 300 words. Once finished editing, you select a title and format the story for publishing.",
+    instructions: "You edit short stories to improve grammar and style, ensuring the stories are less than 100 words. Once finished editing, you select a title and format the story for publishing.",
     tools: [AIFunctionFactory.Create(FormatStory)]
 ));
 
@@ -45,6 +40,8 @@ builder.Services.AddOpenAIConversations();
 builder.Services.AddAGUI();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 app.UseHttpsRedirection();
 
 // Map endpoints for OpenAI responses and conversations

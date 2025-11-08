@@ -10,4 +10,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Agents.AI.AGUI" Version="1.0.0-preview.251107.2" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebApiAgent1.ServiceDefaults\WebApiAgent1.ServiceDefaults.csproj" />
+  </ItemGroup>
 </Project>

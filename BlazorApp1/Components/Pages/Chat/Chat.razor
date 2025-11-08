@@ -13,7 +13,6 @@
         <div>Ask the publisher agent to create a story about a topic of your choosing.</div>
     </NoMessagesContent>
 </ChatMessageList>
-
 <div class="chat-container">
     <ChatSuggestions OnSelected="@AddUserMessageAsync" @ref="@chatSuggestions" />
     <ChatInput OnSend="@AddUserMessageAsync" @ref="@chatInput" />
@@ -51,28 +50,11 @@
         // Stream and display a new response from the IChatClient
         var responseText = new TextContent("");
         currentResponseMessage = new ChatMessage(ChatRole.Assistant, [responseText]);
+        StateHasChanged();
         currentResponseCancellation = new();
         await foreach (var update in ChatClient.GetStreamingResponseAsync(messages.Skip(statefulMessageCount), chatOptions, currentResponseCancellation.Token))
         {
             messages.AddMessages(update, filter: c => c is not TextContent);
-
-            // Check if the author has changed
-            if (update.AuthorName != currentResponseMessage.AuthorName)
-            {
-                // If we have an existing message with content, save it
-                if (currentResponseMessage.AuthorName is not null)
-                {
-                    messages.Add(currentResponseMessage);
-                }
-
-                // Create a new message for the new author
-                responseText = new TextContent("");
-                currentResponseMessage = new ChatMessage(ChatRole.Assistant, [responseText])
-                {
-                    AuthorName = update.AuthorName
-                };
-            }
-
             responseText.Text += update.Text;
             chatOptions.ConversationId = update.ConversationId;
             ChatMessageItem.NotifyChanged(currentResponseMessage);

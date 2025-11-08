@@ -4,10 +4,10 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>eb685d34-cb7e-4e2e-8195-8e9e12e20e27</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Azure.AI.OpenAI" Version="9.5.2-preview.1.25522.3" />
     <PackageReference Include="Microsoft.Agents.AI" Version="1.0.0-preview.251107.2" />
     <PackageReference Include="Microsoft.Agents.AI.DevUI" Version="1.0.0-preview.251107.2" />
     <PackageReference Include="Microsoft.Agents.AI.Hosting" Version="1.0.0-preview.251107.2" />
@@ -15,6 +15,10 @@
     <PackageReference Include="Microsoft.Agents.AI.Hosting.OpenAI" Version="1.0.0-alpha.251107.2" />
     <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.0.0-preview.251107.2" />
     <PackageReference Include="Microsoft.Agents.AI.Workflows" Version="1.0.0-preview.251107.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebApiAgent1.ServiceDefaults\WebApiAgent1.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>
